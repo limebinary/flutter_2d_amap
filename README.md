@@ -1,8 +1,8 @@
 # flutter_2d_amap
 
-本插件主要服务于 [flutter_deer](https://github.com/simplezhli/flutter_deer)。仅保持现有功能，需要的功能可自行拓展。
+高德2D地图插件
 
-高德2D地图插件（已支持[1.12版本新的android插件api]("https://flutter.dev/docs/development/packages-and-plugins/plugin-api-migration")）
+本插件主要服务于 [flutter_deer](https://github.com/simplezhli/flutter_deer)。仅保持现有功能，没有的功能可自行拓展。
 
 ## 效果展示
 
@@ -23,14 +23,24 @@
 
 ## 使用方式
 
-```dart
+pubspec.yaml 添加：
 
+```
 flutter_2d_amap:
     git:
       url: https://github.com/simplezhli/flutter_2d_amap.git
+```
 
+使用前同意隐私政策：
+
+```dart
+Flutter2dAMap.updatePrivacy(true);
+```
+
+使用：
+
+```dart
 import 'package:flutter_2d_amap/flutter_2d_amap.dart';
-
 
 AMap2DView(
   onPoiSearched: (result) {
@@ -80,8 +90,7 @@ AndroidManifest.xml 中添加：
 使用前设置key：
 
 ```dart
-
-Flutter2dAMap.setApiKey("配置你的key");
+Flutter2dAMap.setApiKey(iOSKey: '配置你的key');
 
 ```
 
@@ -110,13 +119,11 @@ Flutter2dAMap.setApiKey("配置你的key");
 <script src="https://webapi.amap.com/loader.js"></script>
 ```
 
-使用`AMap2DView`时添加 `webKey`：
+使用前设置key：
 
 ```dart
 
-AMap2DView(
-  webKey: 'xxx',
-)
+Flutter2dAMap.setApiKey(webKey: '配置你的key');
 
 ```
 

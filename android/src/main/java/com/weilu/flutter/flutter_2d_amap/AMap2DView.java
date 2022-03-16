@@ -40,9 +40,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
 /**
- * @Description:
- * @Author: weilu
- * @Time: 2019/6/26 0026 10:18.
+ * @author weilu
+ * 2019/6/26 0026 10:18.
  */
 public class AMap2DView implements PlatformView, MethodChannel.MethodCallHandler, LocationSource, AMapLocationListener,
         AMap.OnMapClickListener, PoiSearch.OnPoiSearchListener {
@@ -171,14 +170,11 @@ public class AMap2DView implements PlatformView, MethodChannel.MethodCallHandler
                 mListener.onLocationChanged(aMapLocation);
                 aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
                 search(aMapLocation.getLatitude(), aMapLocation.getLongitude());
-                if (mLocationClient != null) {
-                    mLocationClient.stopLocation();
-                }
             } else {
                 Toast.makeText(context,"定位失败，请检查GPS是否开启！", Toast.LENGTH_SHORT).show();
-                if (mLocationClient != null) {
-                    mLocationClient.stopLocation();
-                }
+            }
+            if (mLocationClient != null) {
+                mLocationClient.stopLocation();
             }
         }
     }
@@ -191,9 +187,14 @@ public class AMap2DView implements PlatformView, MethodChannel.MethodCallHandler
         // 设置每页最多返回多少条poiitem
         query.setPageSize(50);
         query.setPageNum(0);
-        PoiSearch poiSearch = new PoiSearch(context, query);
-        poiSearch.setOnPoiSearchListener(this);
-        poiSearch.searchPOIAsyn();
+        try {
+            PoiSearch poiSearch = new PoiSearch(context, query);
+            poiSearch.setOnPoiSearchListener(this);
+            poiSearch.searchPOIAsyn();
+        } catch (AMapException e) {
+            e.printStackTrace();
+        }
+       
     }
 
     private void move(double lat, double lon) {
@@ -210,11 +211,15 @@ public class AMap2DView implements PlatformView, MethodChannel.MethodCallHandler
         query.setPageSize(50);
         query.setPageNum(0);
 
-        PoiSearch poiSearch = new PoiSearch(context, query);
-        poiSearch.setOnPoiSearchListener(this);
-        LatLonPoint latLonPoint = new LatLonPoint(latitude, longitude);
-        poiSearch.setBound(new PoiSearch.SearchBound(latLonPoint, 2000, true));
-        poiSearch.searchPOIAsyn();
+        try {
+            PoiSearch poiSearch = new PoiSearch(context, query);
+            poiSearch.setOnPoiSearchListener(this);
+            LatLonPoint latLonPoint = new LatLonPoint(latitude, longitude);
+            poiSearch.setBound(new PoiSearch.SearchBound(latLonPoint, 2000, true));
+            poiSearch.searchPOIAsyn();
+        } catch (AMapException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -238,14 +243,18 @@ public class AMap2DView implements PlatformView, MethodChannel.MethodCallHandler
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         mListener = onLocationChangedListener;
         if (mLocationClient == null) {
-            mLocationClient = new AMapLocationClient(context);
-            AMapLocationClientOption locationOption = new AMapLocationClientOption();
-            mLocationClient.setLocationListener(this);
-            //设置为高精度定位模式
-            locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-            //设置定位参数
-            mLocationClient.setLocationOption(locationOption);
-            mLocationClient.startLocation();
+            try {
+                mLocationClient = new AMapLocationClient(context);
+                AMapLocationClientOption locationOption = new AMapLocationClientOption();
+                mLocationClient.setLocationListener(this);
+                //设置为高精度定位模式
+                locationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+                //设置定位参数
+                mLocationClient.setLocationOption(locationOption);
+                mLocationClient.startLocation();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

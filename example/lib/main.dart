@@ -3,10 +3,17 @@ import 'package:flutter_2d_amap/flutter_2d_amap.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Flutter2dAMap.setApiKey("1a8f6a489483534a9f2ca96e4eeeb9b3").then((value) => runApp(MyApp()));
+  Flutter2dAMap.updatePrivacy(true);
+  Flutter2dAMap.setApiKey(
+    iOSKey: '1a8f6a489483534a9f2ca96e4eeeb9b3',
+    webKey: '4e479545913a3a180b3cffc267dad646',
+  ).then((value) => runApp(const MyApp()));
 }
 
 class MyApp extends StatefulWidget {
+
+  const MyApp({Key? key}): super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -15,8 +22,8 @@ class _MyAppState extends State<MyApp> {
 
   List<PoiSearch> _list = [];
   int _index = 0;
-  ScrollController _controller = new ScrollController();
-  AMap2DController _aMap2DController;
+  final ScrollController _controller = ScrollController();
+  late AMap2DController _aMap2DController;
   
   @override
   Widget build(BuildContext context) {
@@ -31,13 +38,12 @@ class _MyAppState extends State<MyApp> {
               Expanded(
                 flex: 9,
                 child: AMap2DView(
-                  webKey: '4e479545913a3a180b3cffc267dad646',
                   onPoiSearched: (result) {
                     if (result.isEmpty) {
                       print('无搜索结果返回');
                       return;
                     }
-                    _controller.animateTo(0.0, duration: Duration(milliseconds: 10), curve: Curves.ease);
+                    _controller.animateTo(0.0, duration: const Duration(milliseconds: 10), curve: Curves.ease);
                     setState(() {
                       _index = 0;
                       _list = result;
@@ -55,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                   shrinkWrap: true,
                   itemCount: _list.length,
                   separatorBuilder: (_, index) {
-                    return Divider(height: 0.6);
+                    return const Divider(height: 0.6);
                   },
                   itemBuilder: (_, index) {
                     return InkWell(
@@ -63,7 +69,7 @@ class _MyAppState extends State<MyApp> {
                         setState(() {
                           _index = index;
                           if (_aMap2DController != null) {
-                            _aMap2DController.move(_list[index].latitude, _list[index].longitude);
+                            _aMap2DController.move(_list[index].latitude ?? '', _list[index].longitude ?? '');
                           }
                         });
                       },
@@ -75,15 +81,12 @@ class _MyAppState extends State<MyApp> {
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                _list[index].provinceName + " " +
-                                    _list[index].cityName + " " +
-                                    _list[index].adName + " " +
-                                    _list[index].title,
+                                '${_list[index].provinceName!} ${_list[index].cityName!} ${_list[index].adName!} ${_list[index].title!}',
                               ),
                             ),
                             Opacity(
                               opacity: _index == index ? 1 : 0,
-                              child: Icon(Icons.done, color: Colors.blue)
+                              child: const Icon(Icons.done, color: Colors.blue)
                             )
                           ],
                         ),
